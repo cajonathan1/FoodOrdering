@@ -51,6 +51,5 @@ const styles = StyleSheet.create({
   price: {
     color: Colors.light.tint,
     fontWeight: 'bold',
-
   },
 });
