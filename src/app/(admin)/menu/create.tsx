@@ -1,13 +1,31 @@
+import Button from '@/app/components/Button';
+import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native'
 
 const CreateProductScreen = () => {
+
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+
+    const resetFields = () => {
+        setName('');
+        setPrice('');
+    };
+
+    const onCreate = () => {
+        console.warn('Creating Product ', name, price);
+
+        resetFields();
+    };
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Name</Text>
-      <TextInput placeholder='Name' style={styles.input} />
-
+      <TextInput value={name} onChangeText={setName} placeholder='Name' style={styles.input} />
       <Text style={styles.label}>Price ($)</Text>
-      <TextInput placeholder='9.99' style={styles.input} />
+      <TextInput value={price} onChangeText={setPrice} placeholder='9.99' style={styles.input} keyboardType='numeric'/>
+
+      <Button onPress={onCreate} text='Create' />
     </View>
   )
 }
