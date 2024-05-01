@@ -4,13 +4,16 @@ import Colors from '@/app/constants/Colors';
 import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Image } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
-import { Stack } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 
 const CreateProductScreen = () => {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [errors, setErrors] = useState('');
     const [image, setImage] = useState<string | null>(null);
+
+    const {id} = useLocalSearchParams();
+    const isUpdating = !!id;
 
 
     const resetFields = () => {
@@ -35,12 +38,31 @@ const CreateProductScreen = () => {
         return true;
     };
 
+    const onSubmit = () => {
+        if (isUpdating) {
+            // update
+            onUpdateCreate();
+        } else {
+            onCreate();
+        }
+    };
+
     const onCreate = () => {
         if (!validateInput()) {
             return;
         }
 
-        console.warn('Creating Product ', name, price);
+        console.warn('Creating Product ', name);
+
+        resetFields();
+    };
+
+    const onUpdateCreate = () => {
+        if (!validateInput()) {
+            return;
+        }
+
+        console.warn('Updating Product ', name);
 
         resetFields();
     };
@@ -64,7 +86,7 @@ const CreateProductScreen = () => {
 
   return (
     <View style={styles.container}>
-        <Stack.Screen options={{ title: 'Create Product' }}/>
+        <Stack.Screen options={{ title: isUpdating ? "Update Product"  : 'Create Product' }}/>
       <Image source= {{ uri: image || defaultPizzaImage }} style={styles.image} />
       <Text onPress={pickImage} style={styles.textButton}>Select Image</Text>
       <Text style={styles.label}>Name</Text>
@@ -72,7 +94,7 @@ const CreateProductScreen = () => {
       <Text style={styles.label}>Price ($)</Text>
       <TextInput value={price} onChangeText={setPrice} placeholder='9.99' style={styles.input} keyboardType='numeric'/>
       <Text style={{ color:'red' }}>{errors}</Text>
-      <Button onPress={onCreate} text='Create' />
+      <Button onPress={onSubmit} text={isUpdating ? "Update" : 'Create'} />
     </View>
   )
 }
