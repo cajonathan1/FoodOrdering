@@ -1,13 +1,21 @@
+import OrderListItem from "@/app/components/OrderListItem";
+import orders from "@assets/data/orders";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Text, View } from "react-native";
 
 export default function OrderDetailsScreen() {
     const { id } = useLocalSearchParams();
 
+    const order = orders.find((o) => o.id.toString() === id);
+
+    if (!order) {
+        return <Text>Not Found</Text>
+    }
+
     return(
         <View>
             <Stack.Screen options={{ title: `Order #${id}` }} />
-            <Text>Order details: {id}</Text>
+            <OrderListItem order={order} />
         </View>
     ); 
 }
