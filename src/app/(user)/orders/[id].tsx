@@ -13,7 +13,7 @@ export default function OrderDetailsScreen() {
     }
 
     return(
-        <View>
+        <View style={{ padding: 10}}>
             <Stack.Screen options={{ title: `Order #${id}` }} />
             <OrderListItem order={order} />
         </View>
