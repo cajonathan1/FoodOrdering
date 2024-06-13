@@ -1,11 +1,11 @@
 import Button from '@/app/components/Button';
 import { defaultPizzaImage } from '@/app/components/ProductListItem';
 import Colors from '@/app/constants/Colors';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Image, Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useInsertProduct } from '@/api/products';
+import { useInsertProduct, useProduct, useUpdateProduct } from '@/api/products';
 
 const CreateProductScreen = () => {
     const [name, setName] = useState('');
@@ -13,12 +13,26 @@ const CreateProductScreen = () => {
     const [errors, setErrors] = useState('');
     const [image, setImage] = useState<string | null>(null);
 
-    const {id} = useLocalSearchParams();
-    const isUpdating = !!id;
+    const { id: idString } = useLocalSearchParams();
+    if (!idString) {
+        return <Text>Error: No product ID found.</Text>;
+      }
+    const id = parseFloat(typeof idString === 'string' ? idString : idString[0]);
+    const isUpdating = !!idString;
 
     const { mutate: insertProduct } = useInsertProduct();
+    const { mutate: updateProduct } = useUpdateProduct();
+    const {data: updatingProduct} = useProduct(id);
 
     const router = useRouter();
+
+    useEffect(() => {
+        if (updatingProduct) {
+            setName(updatingProduct.name);
+            setPrice(updatingProduct.price.toString());
+            setImage(updatingProduct.image);
+        }
+    }, [updatingProduct])
 
     const resetFields = () => {
         setName('');
@@ -56,21 +70,29 @@ const CreateProductScreen = () => {
             return;
         }
 
-        insertProduct({ name, price: parseFloat(price), image }, {
+        insertProduct({ name, price: parseFloat(price), image }, 
+        {
             onSuccess: () => {
                 resetFields();
                 router.back();
             }
-        });
+        }
+    );
     };
 
     const onUpdateCreate = () => {
         if (!validateInput()) {
             return;
         }
-
-        console.warn('Updating Product ', name);
-
+        updateProduct(
+            { id, name, price: parseFloat(price), image },
+            {
+                onSuccess: () => {
+                    resetFields();
+                    router.back();
+                }
+            }
+        )
         resetFields();
     };
     

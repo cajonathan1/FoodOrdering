@@ -11,7 +11,6 @@ import { useProduct } from '@/api/products';
 
 const sizes: PizzaSize[] = ['S', 'M', 'L', 'XL'];
 
-
 const ProductDetailsScreen = () => {
   const { id: idString } = useLocalSearchParams();
   if (!idString) {
