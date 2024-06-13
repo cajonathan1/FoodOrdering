@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Image, Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams } from 'expo-router';
+import { useInsertProduct } from '@/api/products';
 
 const CreateProductScreen = () => {
     const [name, setName] = useState('');
@@ -15,6 +16,7 @@ const CreateProductScreen = () => {
     const {id} = useLocalSearchParams();
     const isUpdating = !!id;
 
+    const { mutate: insertProduct } = useInsertProduct();
 
     const resetFields = () => {
         setName('');
@@ -52,7 +54,7 @@ const CreateProductScreen = () => {
             return;
         }
 
-        console.warn('Creating Product ', name);
+        insertProduct({ name, price: parseFloat(price), image });
 
         resetFields();
     };
