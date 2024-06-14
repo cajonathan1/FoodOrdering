@@ -5,24 +5,29 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Image, Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useInsertProduct, useProduct, useUpdateProduct } from '@/api/products';
+import { useInsertProduct, useProduct, useUpdateProduct, useDeleteProduct } from '@/api/products';
 
 const CreateProductScreen = () => {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [errors, setErrors] = useState('');
     const [image, setImage] = useState<string | null>(null);
-
     const { id: idString } = useLocalSearchParams();
+    console.log('idString:', idString);
+    console.log('params:', { id: idString });
+    
     if (!idString) {
         return <Text>Error: No product ID found.</Text>;
       }
-    const id = parseFloat(typeof idString === 'string' ? idString : idString[0]);
+    const id = parseFloat(typeof idString === 'string' ? idString : idString?.[0]);
     const isUpdating = !!idString;
 
     const { mutate: insertProduct } = useInsertProduct();
     const { mutate: updateProduct } = useUpdateProduct();
-    const {data: updatingProduct} = useProduct(id);
+    const { data: updatingProduct } = useProduct(id);
+    const { mutate: deleteProduct } = useDeleteProduct();
+
+      console.log(updatingProduct);
 
     const router = useRouter();
 
@@ -59,7 +64,7 @@ const CreateProductScreen = () => {
     const onSubmit = () => {
         if (isUpdating) {
             // update
-            onUpdateCreate();
+            onUpdate();
         } else {
             onCreate();
         }
@@ -80,7 +85,7 @@ const CreateProductScreen = () => {
     );
     };
 
-    const onUpdateCreate = () => {
+    const onUpdate = () => {
         if (!validateInput()) {
             return;
         }
@@ -90,10 +95,9 @@ const CreateProductScreen = () => {
                 onSuccess: () => {
                     resetFields();
                     router.back();
-                }
+                },
             }
         )
-        resetFields();
     };
     
 
@@ -114,7 +118,10 @@ const CreateProductScreen = () => {
       };
 
       const onDelete = () => {
-        console.warn('Deletes!');
+        deleteProduct(id, {onSuccess:() => {
+            resetFields();
+            router.replace('/(admin)');
+        }});
       };
 
       const confirmDelete = () => {
