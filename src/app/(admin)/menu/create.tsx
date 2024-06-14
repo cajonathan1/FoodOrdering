@@ -12,13 +12,11 @@ const CreateProductScreen = () => {
     const [price, setPrice] = useState('');
     const [errors, setErrors] = useState('');
     const [image, setImage] = useState<string | null>(null);
+    
     const { id: idString } = useLocalSearchParams();
     console.log('idString:', idString);
     console.log('params:', { id: idString });
     
-    if (!idString) {
-        return <Text>Error: No product ID found.</Text>;
-      }
     const id = parseFloat(typeof idString === 'string' ? idString : idString?.[0]);
     const isUpdating = !!idString;
 
@@ -26,8 +24,6 @@ const CreateProductScreen = () => {
     const { mutate: updateProduct } = useUpdateProduct();
     const { data: updatingProduct } = useProduct(id);
     const { mutate: deleteProduct } = useDeleteProduct();
-
-      console.log(updatingProduct);
 
     const router = useRouter();
 
@@ -76,13 +72,13 @@ const CreateProductScreen = () => {
         }
 
         insertProduct({ name, price: parseFloat(price), image }, 
-        {
-            onSuccess: () => {
-                resetFields();
-                router.back();
+            {
+                onSuccess: () => {
+                    resetFields();
+                    router.back();
+                }
             }
-        }
-    );
+        );
     };
 
     const onUpdate = () => {
