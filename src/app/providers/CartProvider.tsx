@@ -2,6 +2,7 @@ import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { CartItem, Tables } from "../types";
 import React from "react";
 import { randomUUID } from "expo-crypto";
+import { useInsertOrder } from "@/api/orders";
 
 type Product = Tables<'products'>;
 
@@ -10,6 +11,7 @@ type CartType = {
     addItem: (product: Product, size: CartItem['size']) => void;
     updateQuantity: (itemId: string, amount: -1 | 1) => void;
     total: number;
+    checkout: () => void
 };
 
 export const CartContext = createContext<CartType>({
@@ -17,10 +19,13 @@ export const CartContext = createContext<CartType>({
     addItem: () => {},
     updateQuantity: () => {},
     total: 0,
+    checkout: () => {},
 });
 
 const CartProvider = ({ children }: PropsWithChildren) => {
     const [items, setItems] = useState<CartItem[]>([]);
+
+    const {mutate: insertOrder} = useInsertOrder();
 
     const addItem = (product: Product, size: CartItem["size"]) => {
         console.log(items);
@@ -52,8 +57,12 @@ const CartProvider = ({ children }: PropsWithChildren) => {
 
     const total = items.reduce((sum, item) => (sum += item.product.price * item.quantity), 0);
 
+    const checkout = () => {
+        insertOrder({ total })
+    };
+
     return (
-        <CartContext.Provider value={{ items, addItem, updateQuantity, total}}>
+        <CartContext.Provider value={{ items, addItem, updateQuantity, total, checkout }}>
             {children}
         </CartContext.Provider>
     );
