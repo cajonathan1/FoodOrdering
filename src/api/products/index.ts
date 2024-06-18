@@ -18,7 +18,11 @@ export const useProduct = (id: number) => {
   return useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+      const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
       if (error) {
         throw new Error(error.message);
       }
@@ -69,9 +73,9 @@ export const useUpdateProduct = () => {
       }
       return updatedProduct;
     },
-    async onSuccess(_, data) {
+    async onSuccess(_, { id }) {
       await queryClient.invalidateQueries(['products']);
-      await queryClient.invalidateQueries(['products', data.id]);
+      await queryClient.invalidateQueries(['products', id]);
 
     },
   });
