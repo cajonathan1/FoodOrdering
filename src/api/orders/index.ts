@@ -77,7 +77,7 @@ export const useInsertOrder = () => {
       return newProduct;
     },
     async onSuccess() {
-      await queryClient.invalidateQueries(['products']);
+      await queryClient.invalidateQueries(['orders']);
     },
   });
 };
