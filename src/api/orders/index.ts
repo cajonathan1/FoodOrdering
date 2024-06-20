@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/providers/AuthProvider";
-import { InsertTables } from "@/app/types";
+import { InsertTables, UpdateTables } from "@/app/types";
 
 export const useAdminOrderList = ({ archived = false }) => {
   const statuses = archived ? ['Delivered'] : ['New', 'Cooking', 'Delivering'];
@@ -83,3 +83,28 @@ export const useInsertOrder = () => {
     },
   });
 };
+
+export const useUpdateOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    async mutationFn({id, updatedField}: {id: number; updatedField: UpdateTables<'orders'>;}) {
+      const { error, data: updatedOrder } = await supabase
+      .from('orders')
+      .update(updatedField)
+      .eq('id', id)
+      .select()
+      .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      return updatedOrder;
+    },
+    async onSuccess(_, { id }) {
+      await queryClient.invalidateQueries(['orders']);
+      await queryClient.invalidateQueries(['orders', id]);
+
+    },
+  });
+}
