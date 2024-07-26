@@ -4,14 +4,22 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import { stripe } from "./_utils/stripe"
 
 console.log("Hello from Functions!")
 
 Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
-  }
+  const { amount } = await req.json()
+
+  const paymentIntent = await stripe.paymentIntent.create({
+    amount: 1099,
+    currency: 'usd',
+  }) 
+
+  const res = {
+    paymentIntent: paymentIntent.client_secret,
+    publishableKey: DelayNode.env.get('EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY'),
+  };
 
   return new Response(
     JSON.stringify(data),
