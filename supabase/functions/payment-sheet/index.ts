@@ -16,7 +16,8 @@ serve(async (req) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
       currency: 'usd',
-    }) 
+    }); 
+    
     const res = {
       paymentIntent: paymentIntent.client_secret,
       publishableKey: Deno.env.get('EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY'),
