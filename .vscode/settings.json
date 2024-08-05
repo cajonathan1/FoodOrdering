@@ -2,5 +2,6 @@
     "cSpell.words": [
         "addto",
         "Pressable"
-    ]
+    ],
+    "deno.enable": true
 }
