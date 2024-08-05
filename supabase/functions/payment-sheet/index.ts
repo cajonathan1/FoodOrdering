@@ -6,12 +6,16 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { stripe } from "./_utils/stripe.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createOrRetrieveProfile } from "./_utils/supabase.ts"
+
 
 console.log("Hello from Functions!")
 
-serve(async (req) => {
+serve(async (req: Request) => {
   try {
     const { amount } = await req.json()
+
+    const customer = await createOrRetrieveProfile(req);
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
