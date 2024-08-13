@@ -37,8 +37,9 @@ export const createOrRetrieveProfile = async (req: Request) => {
     // Create a Stripe customer
     const customer = await stripe.customers.create({
       email: user.email,
-      metadata: { uid: user.id }
+      metadata: { uid: user.id },
     });
+    console.log(`New customer "${customer.id}" created for user "${profile.id}"`);
 
     await supabaseClient
       .from('profiles')
