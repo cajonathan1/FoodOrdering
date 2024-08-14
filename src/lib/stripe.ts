@@ -15,14 +15,14 @@ const fetchPaymentSheetParams = async (amount: number) => {
   };
   
   export const initialisePaymentSheet = async (amount: number) => {
-    const { paymentIntent, publishableKey, customer, ephemeralKey } = await fetchPaymentSheetParams(amount);
+    const { paymentIntent, publishableKey, ephemeralKey, customer  } = await fetchPaymentSheetParams(amount);
   
     if (!publishableKey || !paymentIntent) return;
   
     const { error } = await initPaymentSheet({
-      merchantDisplayName: 'notJust.dev',
+      merchantDisplayName: 'Example, inc',
       paymentIntentClientSecret: paymentIntent,
-      customer: customer,
+      customerId: customer,
       customerEphemeralKey: ephemeralKey,
       defaultBillingDetails: {
         name: 'Jane Doe',

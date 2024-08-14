@@ -1,6 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { stripe } from './stripe.ts'
-
+import { stripe } from './stripe.ts';
 
 export const createOrRetrieveProfile = async (req: Request) => {
     const supabaseClient = createClient(
